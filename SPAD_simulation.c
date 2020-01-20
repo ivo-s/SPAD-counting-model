@@ -2,7 +2,7 @@
  * SPAD_simulation.c
  * 
  * Simulation of SPAD detections - outputs counting statistics.
- * Needs an afterpulsing generation table - see comment on line 262
+ * Needs an afterpulsing generation table - see the comment in main()
  */
 
 #include<pthread.h>
@@ -217,8 +217,10 @@ void * generateHist(void *arg) {
 	a->samples = i;
 
 	// return the result
-	a->returnHist = (unsigned long long *) malloc(sizeof(unsigned long long)*HIST_MAX_SIZE);
-	memcpy(a->returnHist, hist, sizeof(unsigned long long)*HIST_MAX_SIZE);
+	a->returnHist = (unsigned long long *)
+					malloc(sizeof(unsigned long long)*HIST_MAX_SIZE);
+	memcpy(	a->returnHist, hist,
+			sizeof(unsigned long long)*HIST_MAX_SIZE);
 	
 	free(apq.queue);
 	
@@ -229,7 +231,8 @@ void * generateHist(void *arg) {
 int main(int argc, char *argv[]) {
 	
 	if (argc < 4) {
-		printf("ARGUMENTS: <AP dist table> <incident mean rate> <output file>\n");
+		printf(	"ARGUMENTS: <AP dist table> <incident mean rate>"
+				" <output file>\n");
 		return 0;
 	}
 	
@@ -277,7 +280,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	if (ftell(d) % sizeof(APfloat) != 0) {
-		fprintf(stderr, "File does not contain an integer number of floats\n");
+		fprintf(stderr, "File does not contain APfloats\n");
 		fclose(d);free(APdist);
 		return 0;
 	}
@@ -316,9 +319,11 @@ int main(int argc, char *argv[]) {
 	
 	// start threads
 	for (i=0; i<NUM_THREADS; i++) {
-		thread_res = pthread_create(&threads[i], NULL, &generateHist, &thread_args[i]);
+		thread_res = pthread_create(&threads[i], NULL, &generateHist,
+									&thread_args[i]);
 		if (thread_res != 0) {
-			fprintf(stderr, "Starting thread %llu resulted in %d\n", i, thread_res);
+			fprintf(stderr, "Starting thread %llu resulted in %d\n", i,
+					thread_res);
 		}
 	}
 	
@@ -329,8 +334,11 @@ int main(int argc, char *argv[]) {
 		for (i=0; i<NUM_THREADS; i++) {
 			overallProgress += thread_args[i].samples;
 		}
+        
+        // Progress tracking
 		printf("%2.2lf %%\r", (float) overallProgress/SAMPLES*100);
 		fflush(stdout);
+        
 		// if enough samples have been generated, break
 		if (overallProgress >= SAMPLES) break;
 		usleep(100000);
@@ -344,7 +352,8 @@ int main(int argc, char *argv[]) {
 	for (i=0; i<NUM_THREADS; i++) {
 		thread_res = pthread_join(threads[i], NULL);
 		if (thread_res != 0) {
-			fprintf(stderr, "Joining thread %llu resulted in %d\n", i, thread_res);
+			fprintf(stderr, "Joining thread %llu resulted in %d\n", i,
+					thread_res);
 		}
 		// add the simulated histogram to the total
 		for (j=0; j<HIST_MAX_SIZE; j++) {
@@ -361,7 +370,8 @@ int main(int argc, char *argv[]) {
 		if (hist[lastElement] > 0) break;
 	}
 
-	printf("Counts:    %lu\nTime:      %lf\nDet. rate: %lf\n", counts, simTime, counts/simTime);
+	printf(	"Counts:    %lu\nTime:      %lf\nDet. rate: %lf\n",
+			counts, simTime, counts/simTime);
 	
 #ifndef TWILIGHT_PROB_EXPLICIT
 	double twilightProb = thread_args[0].mean*TWILIGHT_COEFF;
