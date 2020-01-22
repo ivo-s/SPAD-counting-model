@@ -4,7 +4,7 @@
 #  time, afterpulsing, and twilight pulsing.
 
 import numpy as np
-from scipy.fftpack import fft,ifft
+from scipy.signal import correlate
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
@@ -38,21 +38,19 @@ AP_dist = apM.T.flatten()
 def ZeroPad(ar, n):
 	return np.pad(ar, (0, n), 'constant', constant_values=0)
 
-# the convolution integral
-def OverheadConvolve(f, mu, d, APmean, a, apDist):
+# the integral transform
+def OverheadIterate(f, mu, d, APmean, a, apDist):
 	# AP intensity
 	nuArray = apDist*APmean
 	# time values
 	t = np.arange(len(f))*binWidth
-	# convolution integrands
-	convol_elem_1 = ZeroPad(f[d:], len(f)+d)
-	convol_elem_2 = ZeroPad((mu*binWidth + f) * \
-					np.exp(-mu*t - np.cumsum(f)), len(f))
-	# convolution using FFT
-	convol = ifft(fft(convol_elem_1)*np.conjugate(fft(convol_elem_2)))
+	# integrands
+	integrand_1 = ZeroPad(f[d:], d)
+	integrand_2 = (mu*binWidth + f) * np.exp(-mu*t - np.cumsum(f))
+	# correlation using FFT
+	corr = correlate(integrand_1,integrand_2, method='fft')[(len(f)-1):]
 	# remove numerical artifacts
-	convol = np.real_if_close(convol[:len(f)])
-	res = (1-a*mu)*convol + a*mu*ZeroPad(f[d:], d) + nuArray
+	res = (1-a*mu)*corr + a*mu*ZeroPad(f[d:], d) + nuArray
 	return res
 
 # calculate mean rate from f
@@ -73,7 +71,7 @@ def MeanRate(mu,dt,APmean,a,apDist):
 	# recovery time expressed in bins
 	dead_index = int(round(rec_time/binWidth))
 	for i in range(no_iter):
-		f = OverheadConvolve(f, mu,dead_index,APmean,a,apDist)
+		f = OverheadIterate(f, mu,dead_index,APmean,a,apDist)
 	return MeanRateFromOverhead(f, mu, dt, a)
 
 # mean rate of the inter-arrival model
@@ -89,7 +87,6 @@ def MeanRate2(mu,dt,APmean,a,apDist):
 
 
 ### ~~ GRAPH PLOTTING ~~ ###
-
 
 # sample incident rates from 0.001 to 100.
 # (1k to 100M)
