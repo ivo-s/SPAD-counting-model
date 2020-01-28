@@ -1,5 +1,10 @@
+# Temporary notice for reviewers
+I apologize that the CodeOcean link in the submitted paper draft does not work. The correct link is supplied below.
+
 # SPAD counting model
 This repository provides the software that goes with the publication *Counting statistics of single-photon avalanche diodes*. It simulates the counting behavior of single-photon avalanche diodes (SPADs). Recovery time, afterpulsing and twilight pulsing are covered. Two commented programs are provided along with the necessary afterpulsing distributions.
+
+Interactive CodeOcean capsule: https://doi.org/10.24433/CO.8487128.v1
 
 If you have any questions or feedback, do not hesitate to contact me through the corresponding author's address or opening an issue here.
 
