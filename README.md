@@ -1,7 +1,7 @@
 # SPAD counting model
-This repository provides the software that goes with the publication [*Counting Statistics of Actively Quenched SPADs Under Continuous Illumination*](https://doi.org/10.1109/JLT.2020.2994654). It simulates the counting behavior of single-photon avalanche diodes (SPADs). Recovery time, afterpulsing and twilight pulsing are covered. Two commented programs are provided along with the necessary afterpulsing distributions.
+[![Open in Code Ocean](https://codeocean.com/codeocean-assets/badge/open-in-code-ocean.svg)](https://doi.org/10.24433/CO.8487128.v1)
 
-Interactive CodeOcean capsule: https://doi.org/10.24433/CO.8487128.v1
+This repository provides the software that goes with the publication [*Counting Statistics of Actively Quenched SPADs Under Continuous Illumination*](https://doi.org/10.1109/JLT.2020.2994654). It simulates the counting behavior of single-photon avalanche diodes (SPADs). Recovery time, afterpulsing and twilight pulsing are covered. Two commented programs are provided along with the necessary afterpulsing distributions.
 
 If you have any questions or feedback, do not hesitate to contact me through the corresponding author's address or opening an issue here.
 
